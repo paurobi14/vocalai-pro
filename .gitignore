@@ -8,4 +8,3 @@ dist/
 *.log
 .env.local
 .env.production
-.env 
