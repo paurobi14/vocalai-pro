@@ -200,7 +200,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
         <li class="plan-feature">Dashboard básico</li>
         <li class="plan-feature">Soporte por email</li>
       </ul>
-      <a class="plan-btn" href="#contacto" onclick="setplan('Essentials')">Solicitar información</a>
+      <a class="plan-btn" href="#contacto">Solicitar información</a>
     </div>
     <div class="plan featured">
       <div class="plan-badge">Más popular</div>
@@ -216,7 +216,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
         <li class="plan-feature">Integración CRM</li>
         <li class="plan-feature">Soporte prioritario 24h</li>
       </ul>
-      <a class="plan-btn" href="#contacto" onclick="setplan('Professional')">Solicitar información</a>
+      <a class="plan-btn" href="#contacto">Solicitar información</a>
     </div>
     <div class="plan">
       <div class="plan-tag">Enterprise</div>
@@ -231,7 +231,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
         <li class="plan-feature">Account manager exclusivo</li>
         <li class="plan-feature">SLA 99.9% uptime</li>
       </ul>
-      <a class="plan-btn" href="#contacto" onclick="setplan('Enterprise')">Solicitar información</a>
+      <a class="plan-btn" href="#contacto">Solicitar información</a>
     </div>
   </div>
 </section>
@@ -267,36 +267,15 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
 <section id="contacto" style="background:var(--paper2);padding:80px 10%;text-align:center">
   <div class="tag">Contacto</div>
   <h2 class="title" style="max-width:500px;margin:0 auto 14px">Cuéntenos su caso.<br><em>Le respondemos hoy.</em></h2>
-  <p class="body-text" style="margin:0 auto 40px;text-align:center">Rellene el formulario y nos pondremos en contacto en menos de 24 horas.</p>
-  <form id="contact-form" action="https://formspree.io/f/mdawyldz" method="POST" style="max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
-    <input type="hidden" name="plan" id="plan-input" value="General">
-    <input type="text" name="nombre" placeholder="Nombre y apellidos" required style="padding:14px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:14px;outline:none;color:var(--ink)">
-    <input type="text" name="empresa" placeholder="Nombre de la empresa" required style="padding:14px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:14px;outline:none;color:var(--ink)">
-    <input type="email" name="email" placeholder="Email corporativo" required style="padding:14px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:14px;outline:none;color:var(--ink)">
-    <input type="tel" name="telefono" placeholder="Teléfono de contacto" style="padding:14px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:14px;outline:none;color:var(--ink)">
-    <textarea name="mensaje" placeholder="¿Cuántas llamadas recibe al mes aproximadamente? ¿Alguna pregunta?" rows="3" style="padding:14px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:14px;outline:none;resize:vertical;color:var(--ink)"></textarea>
-    <button type="submit" style="padding:16px;background:var(--gold);color:var(--ink);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;font-family:var(--sans);transition:.2s" onmouseover="this.style.background='#d4af6a'" onmouseout="this.style.background='var(--gold)'">Enviar solicitud</button>
-    <div id="form-ok" style="display:none;padding:14px;background:#e8f5e9;color:#2e7d32;font-size:13px;text-align:center">Mensaje enviado. Le contactaremos en menos de 24 horas.</div>
-  </form>
+  <p class="body-text" style="margin:0 auto 40px;text-align:center">Contáctenos por WhatsApp o email. Le respondemos en menos de 24 horas.</p>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+    <a href="https://wa.me/34662121021?text=Hola%2C%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20VocalAI%20Pro" style="padding:16px 36px;background:#25D366;color:white;font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;text-decoration:none;display:inline-block;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">WhatsApp</a>
+    <a href="mailto:paurobi14@gmail.com?subject=Informacion%20VocalAI%20Pro&body=Hola%2C%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20VocalAI%20Pro." style="padding:16px 36px;background:var(--gold);color:var(--ink);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;text-decoration:none;display:inline-block;transition:.2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Enviar email</a>
+  </div>
+  <p style="margin-top:24px;font-size:13px;color:var(--ink3)">662 121 021 &nbsp;·&nbsp; paurobi14@gmail.com</p>
 </section>
 
-<script>
-function setplan(plan) {
-  document.getElementById('plan-input').value = plan;
-}
-const form = document.getElementById('contact-form');
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const data = new FormData(form);
-  try {
-    const res = await fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-    if (res.ok) {
-      form.style.display = 'none';
-      document.getElementById('form-ok').style.display = 'block';
-    }
-  } catch(err) {}
-});
-</script>
+
 
 </body>
 </html>
