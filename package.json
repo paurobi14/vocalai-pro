@@ -1,0 +1,44 @@
+{
+  "name": "vocalai-pro",
+  "version": "1.0.0",
+  "description": "Enterprise AI call automation with voice cloning and calendar integration",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "worker": "node src/workers/callWorker.js",
+    "test": "jest --coverage",
+    "lint": "eslint src/**/*.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "axios": "^1.6.0",
+    "bull": "^4.12.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.3",
+    "express-rate-limit": "^7.2.0",
+    "express-validator": "^7.0.1",
+    "googleapis": "^134.0.0",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.3.2",
+    "joi": "^17.12.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.11.3",
+    "twilio": "^4.23.0",
+    "uuid": "^9.0.0",
+    "winston": "^3.12.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

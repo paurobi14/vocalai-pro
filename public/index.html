@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VocalAI Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e8f0;
+  --text2: #8888a0;
+  --text3: #555568;
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --green: #22d3a0;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --blue: #60a5fa;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 0; flex-shrink: 0; position: fixed; height: 100vh; z-index: 10; }
+.main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+.logo-mark { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.logo-icon svg { width: 16px; height: 16px; fill: white; }
+.logo-name { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.logo-tag { font-size: 10px; color: var(--accent2); font-weight: 500; letter-spacing: .5px; text-transform: uppercase; }
+
+.sidebar-nav { padding: 12px 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.nav-section { font-size: 10px; color: var(--text3); font-weight: 500; letter-spacing: .8px; text-transform: uppercase; padding: 8px 10px 4px; margin-top: 8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 400; transition: all .15s; border: none; background: none; width: 100%; text-align: left; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.nav-item.active { background: rgba(108,99,255,0.15); color: var(--accent2); font-weight: 500; }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
+
+.sidebar-footer { padding: 12px 10px; border-top: 1px solid var(--border); }
+.status-pill { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: rgba(34,211,160,0.08); border: 1px solid rgba(34,211,160,0.15); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.status-text { font-size: 12px; color: var(--green); font-weight: 500; }
+
+/* Header */
+.topbar { padding: 16px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 5; }
+.page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); transition: all .15s; border: none; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #7c74ff; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.btn-danger { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.btn-success { background: rgba(34,211,160,0.1); color: var(--green); border: 1px solid rgba(34,211,160,0.2); }
+
+/* Content */
+.content { padding: 24px 28px; flex: 1; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Metrics grid */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; position: relative; overflow: hidden; }
+.metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity .3s; }
+.metric-card:hover::before { opacity: 1; }
+.metric-label { font-size: 11px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.metric-val { font-size: 28px; font-weight: 600; letter-spacing: -1px; line-height: 1; }
+.metric-sub { font-size: 12px; color: var(--text3); margin-top: 6px; }
+.metric-sub.up { color: var(--green); }
+.metric-sub.down { color: var(--red); }
+
+/* Cards */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.card-body { padding: 16px 20px; }
+
+/* Grid 2col */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-green { background: rgba(34,211,160,0.1); color: var(--green); }
+.badge-red { background: rgba(248,113,113,0.1); color: var(--red); }
+.badge-amber { background: rgba(251,191,36,0.1); color: var(--amber); }
+.badge-blue { background: rgba(96,165,250,0.1); color: var(--blue); }
+.badge-gray { background: rgba(255,255,255,0.06); color: var(--text2); }
+.badge-accent { background: rgba(108,99,255,0.15); color: var(--accent2); }
+
+/* Form */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border .15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select { cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 16px; width: 100%; max-width: 520px; padding: 24px; }
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* Call list item */
+.call-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.call-item:last-child { border-bottom: none; }
+.call-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; color: var(--accent2); border: 1px solid var(--border2); }
+.call-info { flex: 1; }
+.call-name { font-size: 13px; font-weight: 500; }
+.call-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* Progress bar */
+.progress { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width .3s; }
+
+/* Empty state */
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); }
+.empty-icon { font-size: 32px; margin-bottom: 10px; opacity: .4; }
+.empty-text { font-size: 13px; }
+
+/* Notification */
+.notif { position: fixed; bottom: 20px; right: 20px; padding: 12px 16px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border2); font-size: 13px; z-index: 200; transform: translateY(80px); opacity: 0; transition: all .3s; max-width: 300px; }
+.notif.show { transform: translateY(0); opacity: 1; }
+.notif.success { border-color: rgba(34,211,160,0.3); color: var(--green); }
+.notif.error { border-color: rgba(248,113,113,0.3); color: var(--red); }
+
+/* Waveform */
+.waveform { display: flex; align-items: center; gap: 2px; height: 20px; }
+.wave-bar { width: 3px; border-radius: 2px; background: var(--accent); animation: wave .8s ease-in-out infinite; }
+.wave-bar:nth-child(2){animation-delay:.1s}
+.wave-bar:nth-child(3){animation-delay:.2s}
+.wave-bar:nth-child(4){animation-delay:.3s}
+.wave-bar:nth-child(5){animation-delay:.4s}
+@keyframes wave{0%,100%{height:4px}50%{height:16px}}
+
+/* Upload zone */
+.upload-zone { border: 2px dashed var(--border2); border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; transition: all .2s; }
+.upload-zone:hover { border-color: var(--accent); background: rgba(108,99,255,0.05); }
+.upload-icon { font-size: 28px; margin-bottom: 8px; color: var(--text3); }
+.upload-text { font-size: 13px; color: var(--text2); }
+.upload-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* Toggle */
+.toggle { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--bg3); border-radius: 11px; cursor: pointer; transition: .2s; border: 1px solid var(--border2); }
+.toggle input:checked + .toggle-slider { background: var(--accent); border-color: var(--accent); }
+.toggle-slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .2s; }
+.toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
+
+.loading { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.2); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">VocalAI Pro</div>
+        <div class="logo-tag">Enterprise</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <button class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Panel
+    </button>
+    <button class="nav-item" onclick="showPage('calls', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+      Llamadas
+    </button>
+    <button class="nav-item" onclick="showPage('campaigns', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.4-1.4L12 14.2l7.6-7.6L21 8l-9 9z"/></svg>
+      Campañas
+    </button>
+    <button class="nav-item" onclick="showPage('contacts', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Contactos
+    </button>
+    <button class="nav-item" onclick="showPage('appointments', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      Citas
+    </button>
+    <div class="nav-section">Configuración</div>
+    <button class="nav-item" onclick="showPage('voice', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+      Voz IA
+    </button>
+    <button class="nav-item" onclick="showPage('settings', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Ajustes
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span class="status-text">Sistema activo</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Panel de control</div>
+      <div class="page-sub" id="dash-date">Cargando...</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="loadDashboard()">↻ Actualizar</button>
+      <button class="btn btn-primary" onclick="showPage('campaigns', document.querySelector('.nav-item:nth-child(4)'))">+ Nueva campaña</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics" id="dash-metrics">
+      <div class="metric-card"><div class="metric-label">Llamadas hoy</div><div class="metric-val" id="m-today">—</div><div class="metric-sub" id="m-today-sub">cargando...</div></div>
+      <div class="metric-card"><div class="metric-label">Citas agendadas</div><div class="metric-val" id="m-appts">—</div><div class="metric-sub up" id="m-appts-sub">este mes</div></div>
+      <div class="metric-card"><div class="metric-label">Tasa de éxito</div><div class="metric-val" id="m-rate">—</div><div class="metric-sub" id="m-rate-sub">llamadas completadas</div></div>
+      <div class="metric-card"><div class="metric-label">Tiempo promedio</div><div class="metric-val" id="m-dur">—</div><div class="metric-sub">segundos por llamada</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Últimas llamadas</span><span class="badge badge-gray" id="calls-count">0</span></div>
+        <div class="card-body" id="recent-calls"><div class="empty"><div class="empty-icon">📞</div><div class="empty-text">No hay llamadas recientes</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Próximas citas</span><span class="badge badge-accent" id="appts-count">0</span></div>
+        <div class="card-body" id="upcoming-appts"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No hay citas próximas</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LLAMADAS -->
+<div id="page-calls" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Llamadas</div><div class="page-sub">Historial completo de llamadas</div></div>
+    <div class="topbar-actions">
+      <select class="form-select" style="width:160px" id="calls-filter" onchange="loadCalls()">
+        <option value="">Todos los estados</option>
+        <option value="completed">Completadas</option>
+        <option value="no-answer">Sin respuesta</option>
+        <option value="failed">Fallidas</option>
+      </select>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Contacto</th><th>Empresa</th><th>Estado</th><th>Resultado</th><th>Duración</th><th>Fecha</th></tr></thead>
+          <tbody id="calls-table"><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAÑAS -->
+<div id="page-campaigns" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Campañas</div><div class="page-sub">Gestiona y lanza campañas de llamadas</div></div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-campaign')">+ Nueva campaña</button>
+    </div>
+  </div>
+  <div class="content">
+    <div id="campaigns-list"><div class="empty"><div class="empty-icon">📣</div><div class="empty-text">No hay campañas. Crea una para empezar.</div></div></div>
+  </div>
+</div>
+
+<!-- CONTACTOS -->
+<div id="page-contacts" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Contactos</div><div class="page-sub">Gestiona tu lista de contactos</div></div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="openModal('modal-import')">↑ Importar CSV</button>
+      <button class="btn btn-primary" onclick="openModal('modal-contact')">+ Nuevo contacto</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-body" style="padding:12px 16px">
+        <input class="form-input" placeholder="Buscar por nombre, teléfono o empresa..." id="contacts-search" oninput="loadContacts()" style="max-width:400px">
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Empresa</th><th>Teléfono</th><th>Idioma</th><th>Llamadas</th><th>Acciones</th></tr></thead>
+          <tbody id="contacts-table"><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CITAS -->
+<div id="page-appointments" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Citas agendadas</div><div class="page-sub">Citas creadas automáticamente por la IA</div></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Título</th><th>Contacto</th><th>Empresa</th><th>Fecha y hora</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="appointments-table"><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VOZ IA -->
+<div id="page-voice" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Configuración de voz IA</div><div class="page-sub">Clona y gestiona la voz del empresario</div></div>
+  </div>
+  <div class="content">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Voz activa</span><span class="badge badge-green">Configurada</span></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div style="width:48px;height:48px;background:rgba(108,99,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">🎙</div>
+            <div>
+              <div style="font-weight:500;margin-bottom:2px">Voz del empresario</div>
+              <div style="font-size:12px;color:var(--text2)" id="voice-id-display">No configurada</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+            <div class="waveform" id="waveform" style="display:none">
+              <div class="wave-bar" style="height:4px"></div>
+              <div class="wave-bar" style="height:8px"></div>
+              <div class="wave-bar" style="height:14px"></div>
+              <div class="wave-bar" style="height:10px"></div>
+              <div class="wave-bar" style="height:6px"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ElevenLabs Voice ID</label>
+            <input class="form-input" id="voice-id-input" placeholder="Pega aquí el Voice ID de ElevenLabs">
+          </div>
+          <button class="btn btn-primary" onclick="saveVoiceId()" style="width:100%">Guardar Voice ID</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Instrucciones para clonar la voz</span></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;background:rgba(108,99,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0">1</div>
+              <div style="font-size:13px;color:var(--text2)">Ve a <strong style="color:var(--text)">elevenlabs.io</strong> e inicia sesión</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;background:rgba(108,99,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0">2</div>
+              <div style="font-size:13px;color:var(--text2)">Ve a <strong style="color:var(--text)">Voices → Add Voice → Instant Clone</strong></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;background:rgba(108,99,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0">3</div>
+              <div style="font-size:13px;color:var(--text2)">Sube el audio del empresario (mín. 3 min, sin ruido)</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;background:rgba(108,99,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0">4</div>
+              <div style="font-size:13px;color:var(--text2)">Copia el <strong style="color:var(--text)">Voice ID</strong> y pégalo en el campo de la izquierda</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AJUSTES -->
+<div id="page-settings" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Ajustes</div><div class="page-sub">Configuración del sistema</div></div>
+    <div class="topbar-actions"><button class="btn btn-primary" onclick="showNotif('Ajustes guardados', 'success')">Guardar cambios</button></div>
+  </div>
+  <div class="content">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Horario de llamadas</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Hora inicio</label><input type="time" class="form-input" value="09:00"></div>
+            <div class="form-group"><label class="form-label">Hora fin</label><input type="time" class="form-input" value="18:30"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Reintentos si no contesta</label>
+            <select class="form-select"><option>1 reintento (2h después)</option><option selected>2 reintentos</option><option>3 reintentos</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Intervalo entre llamadas</label>
+            <select class="form-select"><option>30 segundos</option><option selected>2 minutos</option><option>5 minutos</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Integraciones</span></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500">Google Calendar</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Agendar citas automáticamente</div></div>
+              <a href="/api/auth/google" class="btn btn-ghost" style="font-size:12px;text-decoration:none">Conectar</a>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500">Twilio</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Llamadas salientes</div></div>
+              <span class="badge badge-green">Configurado</span>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500">ElevenLabs</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Síntesis de voz</div></div>
+              <span class="badge badge-green">Configurado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- MODALES -->
+<div class="modal-overlay" id="modal-campaign">
+  <div class="modal">
+    <div class="modal-title">Nueva campaña</div>
+    <div class="form-group"><label class="form-label">Nombre de la campaña</label><input class="form-input" id="c-name" placeholder="Ej: Campaña empresas textiles marzo"></div>
+    <div class="form-group"><label class="form-label">Guión en español</label><textarea class="form-textarea" id="c-script-es" placeholder="Hola, le llamo de parte de {empresa}. ¿Tiene un momento para..."></textarea></div>
+    <div class="form-group"><label class="form-label">Guión en catalán (opcional)</label><textarea class="form-textarea" id="c-script-ca" placeholder="Hola, li truco de part de {empresa}..."></textarea></div>
+    <div class="form-group"><label class="form-label">Guión en inglés (opcional)</label><textarea class="form-textarea" id="c-script-en" placeholder="Hello, I'm calling on behalf of {company}..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-campaign')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createCampaign()">Crear campaña</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal">
+    <div class="modal-title">Nuevo contacto</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="ct-name" placeholder="Juan García"></div>
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="ct-phone" placeholder="+34600000000"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="ct-email" placeholder="juan@empresa.com" type="email"></div>
+      <div class="form-group"><label class="form-label">Empresa</label><input class="form-input" id="ct-company" placeholder="Nombre de la empresa"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Cargo</label><input class="form-input" id="ct-position" placeholder="Director comercial"></div>
+      <div class="form-group"><label class="form-label">Idioma preferido</label>
+        <select class="form-select" id="ct-lang"><option value="es">Español</option><option value="ca">Català</option><option value="en">English</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-contact')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createContact()">Añadir contacto</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-import">
+  <div class="modal">
+    <div class="modal-title">Importar contactos desde CSV</div>
+    <div class="upload-zone" onclick="document.getElementById('csv-file').click()">
+      <div class="upload-icon">📄</div>
+      <div class="upload-text" id="csv-name">Haz clic para seleccionar el fichero CSV</div>
+      <div class="upload-sub">El CSV debe tener columnas: nombre, telefono, email, empresa, idioma</div>
+    </div>
+    <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="handleCsvSelect(this)">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-import')">Cancelar</button>
+      <button class="btn btn-primary" onclick="importCsv()" id="btn-import" disabled>Importar</button>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+const API = '';
+
+// ── Navegación ────────────────────────────────────────────────
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const loaders = { dashboard: loadDashboard, calls: loadCalls, campaigns: loadCampaigns, contacts: loadContacts, appointments: loadAppointments };
+  if (loaders[name]) loaders[name]();
+}
+
+// ── API helper ────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+  return res.json();
+}
+
+// ── Dashboard ─────────────────────────────────────────────────
+async function loadDashboard() {
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  try {
+    const [stats, appts] = await Promise.all([
+      api('/api/calls/stats/summary'),
+      api('/api/appointments/stats/upcoming'),
+    ]);
+
+    if (stats.data) {
+      const d = stats.data;
+      document.getElementById('m-today').textContent = d.today || 0;
+      document.getElementById('m-appts').textContent = d.appointments || 0;
+      document.getElementById('m-rate').textContent = (d.success_rate || 0) + '%';
+      document.getElementById('m-dur').textContent = Math.round(d.avg_duration || 0) + 's';
+    }
+
+    if (appts.data) {
+      document.getElementById('appts-count').textContent = appts.data.length;
+      const el = document.getElementById('upcoming-appts');
+      if (!appts.data.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No hay citas próximas</div></div>';
+      } else {
+        el.innerHTML = appts.data.slice(0, 5).map(a => `
+          <div class="call-item">
+            <div class="call-avatar">${(a.contact_name||'?')[0].toUpperCase()}</div>
+            <div class="call-info">
+              <div class="call-name">${a.contact_name || 'Desconocido'}</div>
+              <div class="call-meta">${a.company_name || ''} · ${formatDate(a.start_time)}</div>
+            </div>
+            <span class="badge badge-green">Confirmada</span>
+          </div>`).join('');
+      }
+    }
+
+    const callsRes = await api('/api/calls?limit=5');
+    if (callsRes.data) {
+      document.getElementById('calls-count').textContent = callsRes.pagination?.total || 0;
+      const el = document.getElementById('recent-calls');
+      if (!callsRes.data.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">📞</div><div class="empty-text">No hay llamadas recientes</div></div>';
+      } else {
+        el.innerHTML = callsRes.data.map(c => `
+          <div class="call-item">
+            <div class="call-avatar">${(c.contact_name||'?')[0].toUpperCase()}</div>
+            <div class="call-info">
+              <div class="call-name">${c.contact_name || 'Desconocido'}</div>
+              <div class="call-meta">${c.company_name || ''} · ${formatDate(c.started_at || c.created_at)}</div>
+            </div>
+            ${outcomeBadge(c.outcome, c.status)}
+          </div>`).join('');
+      }
+    }
+  } catch(e) { console.error(e); }
+}
+
+// ── Llamadas ──────────────────────────────────────────────────
+async function loadCalls() {
+  const status = document.getElementById('calls-filter')?.value || '';
+  const res = await api(`/api/calls?limit=50${status ? '&status='+status : ''}`);
+  const tbody = document.getElementById('calls-table');
+  if (!res.data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">No hay llamadas</td></tr>'; return; }
+  tbody.innerHTML = res.data.map(c => `
+    <tr>
+      <td><strong>${c.contact_name || '—'}</strong></td>
+      <td style="color:var(--text2)">${c.company_name || '—'}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>${outcomeBadge(c.outcome, c.status)}</td>
+      <td style="font-family:var(--mono);font-size:12px">${c.duration_secs ? Math.floor(c.duration_secs/60)+':'+String(c.duration_secs%60).padStart(2,'0') : '—'}</td>
+      <td style="color:var(--text2);font-size:12px">${formatDate(c.started_at || c.created_at)}</td>
+    </tr>`).join('');
+}
+
+// ── Campañas ──────────────────────────────────────────────────
+async function loadCampaigns() {
+  const res = await api('/api/campaigns');
+  const el = document.getElementById('campaigns-list');
+  if (!res.data?.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📣</div><div class="empty-text">No hay campañas. Crea una para empezar.</div></div>'; return; }
+  el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px">' + res.data.map(c => `
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-weight:500;font-size:14px">${c.name}</span>
+          ${statusBadge(c.status)}
+        </div>
+        <div style="display:flex;gap:8px">
+          ${c.status !== 'active' ? `<button class="btn btn-success" onclick="launchCampaign('${c.id}')">▶ Lanzar</button>` : `<button class="btn btn-danger" onclick="pauseCampaign('${c.id}')">⏸ Pausar</button>`}
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">LLAMADAS</div><div style="font-size:18px;font-weight:600">${c.total_calls || 0}</div></div>
+          <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">CITAS</div><div style="font-size:18px;font-weight:600;color:var(--green)">${c.appointments || 0}</div></div>
+          <div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">TASA</div><div style="font-size:18px;font-weight:600">${c.total_calls > 0 ? Math.round((c.appointments/c.total_calls)*100) : 0}%</div></div>
+        </div>
+        <div class="progress" style="margin-top:12px"><div class="progress-fill" style="width:${c.total_calls > 0 ? Math.round((c.appointments/c.total_calls)*100) : 0}%"></div></div>
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+async function createCampaign() {
+  const name = document.getElementById('c-name').value;
+  const scriptEs = document.getElementById('c-script-es').value;
+  if (!name || !scriptEs) { showNotif('Rellena el nombre y el guión en español', 'error'); return; }
+  const res = await api('/api/campaigns', { method: 'POST', body: JSON.stringify({ name, scriptEs, scriptCa: document.getElementById('c-script-ca').value, scriptEn: document.getElementById('c-script-en').value }) });
+  if (res.success) { closeModal('modal-campaign'); showNotif('Campaña creada', 'success'); loadCampaigns(); }
+  else showNotif('Error al crear la campaña', 'error');
+}
+
+async function launchCampaign(id) {
+  const res = await api(`/api/campaigns/${id}/launch`, { method: 'POST' });
+  if (res.success) { showNotif(res.message, 'success'); loadCampaigns(); }
+  else showNotif('Error al lanzar la campaña', 'error');
+}
+
+async function pauseCampaign(id) {
+  const res = await api(`/api/campaigns/${id}/pause`, { method: 'POST' });
+  if (res.success) { showNotif('Campaña pausada', 'success'); loadCampaigns(); }
+}
+
+// ── Contactos ─────────────────────────────────────────────────
+async function loadContacts() {
+  const search = document.getElementById('contacts-search')?.value || '';
+  const res = await api(`/api/contacts?limit=50${search ? '&search='+encodeURIComponent(search) : ''}`);
+  const tbody = document.getElementById('contacts-table');
+  if (!res.data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">No hay contactos</td></tr>'; return; }
+  const langs = { es: '🇪🇸 ES', ca: '🏴 CA', en: '🇬🇧 EN' };
+  tbody.innerHTML = res.data.map(c => `
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td style="color:var(--text2)">${c.company_name || '—'}</td>
+      <td style="font-family:var(--mono);font-size:12px">${c.phone}</td>
+      <td>${langs[c.preferred_lang] || c.preferred_lang}</td>
+      <td><span class="badge badge-gray">${c.call_count || 0}</span></td>
+      <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="blockContact('${c.id}')">Bloquear</button></td>
+    </tr>`).join('');
+}
+
+async function createContact() {
+  const name = document.getElementById('ct-name').value;
+  const phone = document.getElementById('ct-phone').value;
+  if (!name || !phone) { showNotif('Nombre y teléfono son obligatorios', 'error'); return; }
+  const res = await api('/api/contacts', { method: 'POST', body: JSON.stringify({ name, phone, email: document.getElementById('ct-email').value, companyName: document.getElementById('ct-company').value, position: document.getElementById('ct-position').value, preferredLang: document.getElementById('ct-lang').value }) });
+  if (res.success) { closeModal('modal-contact'); showNotif('Contacto añadido', 'success'); loadContacts(); }
+  else showNotif('Error al crear el contacto', 'error');
+}
+
+async function blockContact(id) {
+  if (!confirm('¿Bloquear este contacto? No recibirá más llamadas.')) return;
+  const res = await api(`/api/contacts/${id}`, { method: 'PATCH', body: JSON.stringify({ do_not_call: true }) });
+  if (res.success) { showNotif('Contacto bloqueado', 'success'); loadContacts(); }
+}
+
+// ── CSV ───────────────────────────────────────────────────────
+let csvFile = null;
+function handleCsvSelect(input) {
+  csvFile = input.files[0];
+  if (csvFile) { document.getElementById('csv-name').textContent = csvFile.name; document.getElementById('btn-import').disabled = false; }
+}
+
+async function importCsv() {
+  if (!csvFile) return;
+  const form = new FormData();
+  form.append('file', csvFile);
+  const res = await fetch('/api/contacts/import/csv', { method: 'POST', body: form }).then(r => r.json());
+  if (res.success) { closeModal('modal-import'); showNotif(`Importados ${res.data.imported} contactos`, 'success'); loadContacts(); }
+  else showNotif('Error al importar el CSV', 'error');
+}
+
+// ── Citas ─────────────────────────────────────────────────────
+async function loadAppointments() {
+  const res = await api('/api/appointments?limit=50');
+  const tbody = document.getElementById('appointments-table');
+  if (!res.data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">No hay citas agendadas</td></tr>'; return; }
+  tbody.innerHTML = res.data.map(a => `
+    <tr>
+      <td><strong>${a.title}</strong></td>
+      <td>${a.contact_name || '—'}</td>
+      <td style="color:var(--text2)">${a.company_name || '—'}</td>
+      <td style="font-size:12px">${formatDate(a.start_time)}</td>
+      <td><span class="badge ${a.status==='confirmed'?'badge-green':'badge-red'}">${a.status==='confirmed'?'Confirmada':'Cancelada'}</span></td>
+      <td>${a.status==='confirmed'?`<button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="cancelAppt('${a.id}')">Cancelar</button>`:''}</td>
+    </tr>`).join('');
+}
+
+async function cancelAppt(id) {
+  if (!confirm('¿Cancelar esta cita? Se eliminará de Google Calendar.')) return;
+  const res = await api(`/api/appointments/${id}`, { method: 'DELETE' });
+  if (res.success) { showNotif('Cita cancelada', 'success'); loadAppointments(); }
+}
+
+// ── Voz ───────────────────────────────────────────────────────
+function saveVoiceId() {
+  const id = document.getElementById('voice-id-input').value.trim();
+  if (!id) { showNotif('Introduce un Voice ID', 'error'); return; }
+  document.getElementById('voice-id-display').textContent = id;
+  document.getElementById('waveform').style.display = 'flex';
+  showNotif('Voice ID guardado. Añádelo también al fichero .env como ELEVENLABS_VOICE_ID', 'success');
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+function statusBadge(status) {
+  const map = { completed: ['badge-green','Completada'], 'in-progress': ['badge-blue','En curso'], ringing: ['badge-blue','Sonando'], initiated: ['badge-blue','Iniciada'], 'no-answer': ['badge-amber','Sin respuesta'], busy: ['badge-amber','Ocupado'], failed: ['badge-red','Fallida'], canceled: ['badge-gray','Cancelada'], queued: ['badge-gray','En cola'], scheduled: ['badge-gray','Programada'] };
+  const [cls, label] = map[status] || ['badge-gray', status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function outcomeBadge(outcome, status) {
+  if (outcome === 'appointment_set') return '<span class="badge badge-green">✓ Cita agendada</span>';
+  if (outcome === 'callback') return '<span class="badge badge-amber">Callback</span>';
+  if (outcome === 'rejected') return '<span class="badge badge-red">Rechazado</span>';
+  if (status === 'no-answer') return '<span class="badge badge-gray">No contestó</span>';
+  return '<span class="badge badge-gray">—</span>';
+}
+
+// ── Modales ───────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+// ── Notificaciones ────────────────────────────────────────────
+function showNotif(msg, type = 'success') {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = `notif ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+loadDashboard();
+</script>
+</body>
+</html>

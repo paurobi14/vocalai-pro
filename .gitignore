@@ -1,0 +1,10 @@
+node_modules/
+.env
+logs/
+uploads/
+coverage/
+dist/
+.DS_Store
+*.log
+.env.local
+.env.production
