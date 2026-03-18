@@ -1,2 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VocalAI Pro — Automatización de llamadas con IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e0e0e;--ink2:#3a3a3a;--ink3:#888;--paper:#faf9f7;--paper2:#f3f1ee;--gold:#b8963e;--gold2:#d4af6a;--line:rgba(0,0,0,0.1);--serif:'Cormorant Garamond',serif;--sans:'DM Sans',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 10%;display:flex;justify-content:space-between;align-items:center;background:rgba(14,14,14,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-brand{font-family:var(--serif);font-size:18px;color:#f5f2ed;font-weight:300;letter-spacing:.5px}
+.nav-brand span{color:var(--gold)}
+.nav-cta{font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid rgba(184,150,62,0.4);padding:8px 18px;transition:.2s}
+.nav-cta:hover{background:var(--gold);color:var(--ink)}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 10% 80px;background:var(--ink);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(184,150,62,0.07) 0%,transparent 70%)}
+.hero-tag{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:28px}
+.hero-title{font-family:var(--serif);font-size:clamp(48px,6vw,88px);font-weight:300;line-height:1.05;color:#f5f2ed;letter-spacing:-1px;margin-bottom:28px}
+.hero-title em{font-style:italic;color:var(--gold2)}
+.hero-sub{font-size:16px;font-weight:300;color:rgba(245,242,237,0.55);max-width:500px;line-height:1.7}
+section{padding:90px 10%}
+.tag{font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.title{font-family:var(--serif);font-size:clamp(34px,4vw,52px);font-weight:300;line-height:1.1;letter-spacing:-0.5px;margin-bottom:20px}
+.title em{font-style:italic}
+.body-text{font-size:15px;color:var(--ink2);line-height:1.8;max-width:580px}
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:50px;border:1px solid var(--line)}
+.prob-item{padding:36px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.prob-item:nth-child(2n){border-right:none}
+.prob-item:nth-child(3),.prob-item:nth-child(4){border-bottom:none}
+.prob-num{font-family:var(--serif);font-size:44px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:12px;opacity:.7}
+.prob-title{font-size:14px;font-weight:500;margin-bottom:6px}
+.prob-text{font-size:13px;color:var(--ink2);line-height:1.6}
+.sol-bg{background:var(--ink)}
+.sol-bg .body-text{color:rgba(245,242,237,0.5)}
+.sol-steps{display:flex;flex-direction:column;gap:0;margin-top:50px;max-width:680px}
+.sol-step{display:flex;gap:28px;padding:28px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sol-step:last-child{border-bottom:none}
+.sol-num{font-family:var(--serif);font-size:13px;color:var(--gold);width:28px;flex-shrink:0;margin-top:2px}
+.sol-title{font-size:15px;font-weight:500;color:#f5f2ed;margin-bottom:5px}
+.sol-text{font-size:13px;color:rgba(245,242,237,0.45);line-height:1.6}
+.badge{display:inline-block;background:rgba(184,150,62,0.1);border:1px solid rgba(184,150,62,0.2);color:var(--gold2);font-size:11px;padding:2px 8px;margin-left:8px}
+.stats-bg{background:var(--paper2)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:50px}
+.stat{background:var(--paper2);padding:44px 36px;text-align:center}
+.stat-val{font-family:var(--serif);font-size:60px;font-weight:300;line-height:1;letter-spacing:-2px;margin-bottom:6px}
+.stat-val span{font-size:32px;color:var(--gold)}
+.stat-label{font-size:12px;color:var(--ink3)}
+.stat-sub{font-size:11px;color:var(--ink3);margin-top:3px}
+.casos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:50px;border:1px solid var(--line)}
+.caso{background:var(--paper);padding:36px;transition:.15s}
+.caso:hover{background:var(--paper2)}
+.caso-sector{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.caso-title{font-family:var(--serif);font-size:20px;font-weight:400;margin-bottom:10px;line-height:1.2}
+.caso-text{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px}
+.caso-result{font-size:12px;color:var(--ink3);padding-top:14px;border-top:1px solid var(--line)}
+.caso-result strong{color:var(--gold);font-weight:500}
+.como-bg{background:var(--ink)}
+.como-bg .body-text{color:rgba(245,242,237,0.45)}
+.timeline{margin-top:50px;display:flex;flex-direction:column;position:relative}
+.timeline::before{content:'';position:absolute;left:18px;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.07)}
+.tl-item{display:flex;gap:36px;padding:24px 0}
+.tl-dot{width:37px;height:37px;border-radius:50%;border:1px solid rgba(184,150,62,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--ink);position:relative;z-index:1}
+.tl-inner{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.tl-title{font-size:14px;font-weight:500;color:#f5f2ed;margin-bottom:3px;margin-top:6px}
+.tl-text{font-size:13px;color:rgba(245,242,237,0.4);line-height:1.5}
+.tl-time{font-size:11px;color:var(--gold);letter-spacing:.5px;margin-top:3px}
+.planes-bg{background:var(--paper2)}
+.planes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:50px;border:1px solid var(--line)}
+.plan{background:var(--paper2);padding:44px 36px;position:relative}
+.plan.featured{background:var(--ink);color:#f5f2ed}
+.plan-badge{position:absolute;top:20px;right:20px;background:var(--gold);color:var(--ink);font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;padding:3px 8px}
+.plan-tag{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:16px}
+.plan.featured .plan-tag{color:rgba(245,242,237,0.4)}
+.plan-name{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:20px}
+.plan-price{font-family:var(--serif);font-size:28px;font-weight:300;color:var(--gold);margin-bottom:4px;letter-spacing:.5px}
+.plan-price-sub{font-size:12px;color:var(--ink3);margin-bottom:28px}
+.plan.featured .plan-price-sub{color:rgba(245,242,237,0.4)}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.plan-feature{font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:8px}
+.plan.featured .plan-feature{color:rgba(245,242,237,0.6)}
+.plan-feature::before{content:'';width:14px;height:1px;background:var(--gold);flex-shrink:0}
+.plan-btn{display:block;text-align:center;padding:13px;border:1px solid var(--line);font-size:13px;font-weight:500;cursor:pointer;transition:.2s;text-decoration:none;color:var(--ink);background:transparent;font-family:var(--sans);letter-spacing:.5px}
+.plan-btn:hover{background:var(--ink);color:#f5f2ed;border-color:var(--ink)}
+.plan.featured .plan-btn{border-color:var(--gold);color:var(--gold)}
+.plan.featured .plan-btn:hover{background:var(--gold);color:var(--ink)}
+.garantia-bg{background:var(--paper);text-align:center}
+.garantia-bg .title{margin:0 auto 16px}
+.garantia-bg .body-text{margin:0 auto;text-align:center}
+.garantia-items{display:flex;justify-content:center;gap:50px;margin-top:50px;flex-wrap:wrap}
+.g-item{text-align:center;max-width:180px}
+.g-icon{font-family:var(--serif);font-size:30px;color:var(--gold);margin-bottom:10px}
+.g-title{font-size:13px;font-weight:500;margin-bottom:5px}
+.g-text{font-size:12px;color:var(--ink3);line-height:1.5}
+.cta-bg{background:var(--ink);text-align:center;padding:110px 10%;position:relative;overflow:hidden}
+.cta-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 50%,rgba(184,150,62,0.05) 0%,transparent 70%)}
+.cta-bg .title{color:#f5f2ed;max-width:600px;margin:0 auto 20px;position:relative;z-index:1}
+.cta-bg .body-text{color:rgba(245,242,237,0.45);margin:0 auto 44px;text-align:center;position:relative;z-index:1}
+.cta-btns{display:flex;gap:14px;justify-content:center;position:relative;z-index:1;flex-wrap:wrap}
+.btn-gold{padding:15px 38px;background:var(--gold);color:var(--ink);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;font-family:var(--sans);transition:.2s;text-decoration:none;display:inline-block}
+.btn-gold:hover{background:var(--gold2)}
+.btn-out{padding:15px 38px;background:transparent;color:#f5f2ed;font-size:13px;font-weight:400;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(245,242,237,0.2);cursor:pointer;font-family:var(--sans);transition:.2s;text-decoration:none;display:inline-block}
+.btn-out:hover{border-color:rgba(245,242,237,0.5)}
+footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding:32px 10%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-brand{font-family:var(--serif);font-size:18px;color:#f5f2ed;font-weight:300}
+.footer-brand span{color:var(--gold)}
+.footer-info{display:flex;gap:24px;font-size:12px;color:rgba(245,242,237,0.35)}
+</style>
+</head>
+<body>
 
-<h1>test</h1>
+<nav>
+  <div class="nav-brand">Vocal<span>AI</span> Pro</div>
+  <a class="nav-cta" href="mailto:paurobi14@gmail.com?subject=Solicitud%20de%20informacion%20VocalAI%20Pro">Solicitar información</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Automatización de atención telefónica · Inteligencia Artificial</div>
+  <h1 class="hero-title">Su empresa nunca<br>perderá una llamada.<br><em>Nunca.</em></h1>
+  <p class="hero-sub">VocalAI Pro atiende cada llamada entrante con la voz exacta de su equipo, en español, catalán e inglés, agenda citas y gestiona consultas automáticamente.</p>
+</div>
+
+<section style="background:var(--paper)">
+  <div class="tag">El coste oculto</div>
+  <h2 class="title">Cada llamada perdida<br>es <em>ingresos perdidos</em></h2>
+  <p class="body-text">Las empresas pierden entre un 20% y un 40% de llamadas entrantes por saturación, horario o falta de personal. Cada una tiene nombre y apellidos.</p>
+  <div class="prob-grid">
+    <div class="prob-item"><div class="prob-num">67%</div><div class="prob-title">Clientes que no vuelven a llamar</div><div class="prob-text">Cuando un cliente no es atendido a la primera, el 67% busca alternativas en menos de 24 horas.</div></div>
+    <div class="prob-item"><div class="prob-num">4.2h</div><div class="prob-title">Tiempo medio de respuesta actual</div><div class="prob-text">La media del sector. VocalAI Pro responde en el primer tono, siempre, sin excepciones.</div></div>
+    <div class="prob-item"><div class="prob-num">38%</div><div class="prob-title">Llamadas fuera de horario sin atender</div><div class="prob-text">Más de un tercio llegan fuera del horario laboral. Sin automatización, ese negocio se pierde.</div></div>
+    <div class="prob-item"><div class="prob-num">2.8×</div><div class="prob-title">Coste de adquirir un cliente nuevo</div><div class="prob-text">Retener cuesta 2.8 veces menos que captar. Una llamada no atendida rompe esa relación.</div></div>
+  </div>
+</section>
+
+<section class="sol-bg">
+  <div class="tag">La solución</div>
+  <h2 class="title" style="color:#f5f2ed">Un recepcionista virtual<br><em>indistinguible de usted</em></h2>
+  <p class="body-text">Clonamos la voz de su interlocutor con precisión milimétrica. Quien llame escuchará exactamente la voz que reconoce, tomando decisiones en tiempo real.</p>
+  <div class="sol-steps">
+    <div class="sol-step"><div class="sol-num">01</div><div><div class="sol-title">Clonación de voz en 48h <span class="badge">ElevenLabs</span></div><div class="sol-text">Con 3 minutos de grabación creamos un clon digital indistinguible. Sin estudio ni equipamiento.</div></div></div>
+    <div class="sol-step"><div class="sol-num">02</div><div><div class="sol-title">IA conversacional multiidioma <span class="badge">Claude AI</span></div><div class="sol-text">Comprende el contexto, responde preguntas y adapta el discurso en ES, CA y EN automáticamente.</div></div></div>
+    <div class="sol-step"><div class="sol-num">03</div><div><div class="sol-title">Agenda citas sin fricción <span class="badge">Google Calendar</span></div><div class="sol-text">Cuando el cliente confirma, la cita se crea al instante en su calendario. Notificación en tiempo real.</div></div></div>
+    <div class="sol-step"><div class="sol-num">04</div><div><div class="sol-title">Transferencia inteligente a personas reales</div><div class="sol-text">Ante situaciones urgentes o complejas, transfiere la llamada a su equipo sin cortes.</div></div></div>
+    <div class="sol-step"><div class="sol-num">05</div><div><div class="sol-title">Panel de control en tiempo real</div><div class="sol-text">Transcripciones, grabaciones y métricas de todas las llamadas desde cualquier dispositivo.</div></div></div>
+  </div>
+</section>
+
+<section class="stats-bg">
+  <div class="tag" style="text-align:center">Resultados medidos</div>
+  <h2 class="title" style="text-align:center">Números que<br><em>justifican la inversión</em></h2>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-val">100<span>%</span></div><div class="stat-label">Llamadas atendidas</div><div class="stat-sub">En el primer tono, 24/7/365</div></div>
+    <div class="stat"><div class="stat-val">&lt;2<span>s</span></div><div class="stat-label">Tiempo de respuesta</div><div class="stat-sub">Desde que entra la llamada</div></div>
+    <div class="stat"><div class="stat-val">97<span>%</span></div><div class="stat-label">Similitud de voz</div><div class="stat-sub">Clientes no detectan la diferencia</div></div>
+  </div>
+</section>
+
+<section style="background:var(--paper)">
+  <div class="tag">Sectores</div>
+  <h2 class="title">Para empresas que no pueden<br>permitirse perder <em>ninguna oportunidad</em></h2>
+  <div class="casos-grid">
+    <div class="caso"><div class="caso-sector">Despachos jurídicos</div><div class="caso-title">Atención 24h para consultas urgentes</div><div class="caso-text">La IA recibe, evalúa urgencia, responde preguntas básicas y agenda con el abogado correspondiente.</div><div class="caso-result">Resultado: <strong>+34% conversión de llamadas a clientes</strong></div></div>
+    <div class="caso"><div class="caso-sector">Clínicas y centros médicos</div><div class="caso-title">Gestión de citas sin colapsar recepción</div><div class="caso-text">Agenda, cancela y modifica citas. Informa sobre especialidades, seguros y preparación de pruebas.</div><div class="caso-result">Resultado: <strong>-60% tiempo del personal en llamadas</strong></div></div>
+    <div class="caso"><div class="caso-sector">Servicios financieros</div><div class="caso-title">Filtrado y cualificación de leads</div><div class="caso-text">Cualifica el perfil, responde dudas y transfiere solo los casos con potencial real al equipo.</div><div class="caso-result">Resultado: <strong>+2.8× productividad comercial</strong></div></div>
+    <div class="caso"><div class="caso-sector">Inmobiliarias premium</div><div class="caso-title">Atención personalizada siempre disponible</div><div class="caso-text">Responde sobre propiedades, agenda visitas y captura datos del comprador potencial.</div><div class="caso-result">Resultado: <strong>0 llamadas perdidas en fines de semana</strong></div></div>
+    <div class="caso"><div class="caso-sector">Consultoría y asesoría</div><div class="caso-title">Primera impresión siempre perfecta</div><div class="caso-text">La voz del socio directivo atiende cada llamada, recoge el motivo y agenda reuniones.</div><div class="caso-result">Resultado: <strong>Alta disponibilidad sin coste de personal</strong></div></div>
+    <div class="caso"><div class="caso-sector">Restauración y hostelería</div><div class="caso-title">Reservas sin límite de horario</div><div class="caso-text">Gestiona reservas, informa sobre carta y eventos. Confirma disponibilidad en tiempo real.</div><div class="caso-result">Resultado: <strong>+28% reservas fuera de horario</strong></div></div>
+  </div>
+</section>
+
+<section class="como-bg">
+  <div class="tag">Implantación</div>
+  <h2 class="title" style="color:#f5f2ed">Operativo en <em>72 horas</em>.<br>Sin obras. Sin IT.</h2>
+  <p class="body-text">No requiere cambiar ningún sistema. Su número de teléfono sigue siendo el mismo.</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"><div class="tl-inner"></div></div><div><div class="tl-title">Reunión de onboarding</div><div class="tl-text">Definimos guión, preguntas frecuentes y protocolo de transferencia.</div><div class="tl-time">Día 1 · 60 min</div></div></div>
+    <div class="tl-item"><div class="tl-dot"><div class="tl-inner"></div></div><div><div class="tl-title">Grabación de voz</div><div class="tl-text">3-5 minutos desde su móvil. Sin estudio ni equipamiento especial.</div><div class="tl-time">Día 1 · 10 min</div></div></div>
+    <div class="tl-item"><div class="tl-dot"><div class="tl-inner"></div></div><div><div class="tl-title">Clonación y configuración</div><div class="tl-text">Clonamos la voz, configuramos la IA y conectamos el calendario.</div><div class="tl-time">Días 1-2 · Por nuestra parte</div></div></div>
+    <div class="tl-item"><div class="tl-dot"><div class="tl-inner"></div></div><div><div class="tl-title">Demo en vivo</div><div class="tl-text">Usted llama a su propio número y escucha su voz atendiendo. Ajustamos lo necesario.</div><div class="tl-time">Día 2 · 45 min</div></div></div>
+    <div class="tl-item"><div class="tl-dot"><div class="tl-inner"></div></div><div><div class="tl-title">Activación</div><div class="tl-text">Activamos el desvío desde su operador. Ningún cliente nota el cambio.</div><div class="tl-time">Día 3 · 5 min</div></div></div>
+  </div>
+</section>
+
+<section class="planes-bg">
+  <div class="tag">Planes</div>
+  <h2 class="title">Transparente.<br><em>Sin sorpresas.</em></h2>
+  <p class="body-text">Contáctenos para recibir una propuesta personalizada adaptada a su volumen y necesidades.</p>
+  <div class="planes-grid">
+    <div class="plan">
+      <div class="plan-tag">Essentials</div>
+      <div class="plan-name">Para empresas en crecimiento</div>
+      <div class="plan-price">Consultar precio</div>
+      <div class="plan-price-sub">Adaptado a su volumen de llamadas</div>
+      <ul class="plan-features">
+        <li class="plan-feature">1 voz clonada</li>
+        <li class="plan-feature">Español + Catalán</li>
+        <li class="plan-feature">Agenda de citas automática</li>
+        <li class="plan-feature">Dashboard básico</li>
+        <li class="plan-feature">Soporte por email</li>
+      </ul>
+      <a class="plan-btn" href="mailto:paurobi14@gmail.com?subject=Informacion%20Plan%20Essentials%20VocalAI%20Pro">Solicitar información</a>
+    </div>
+    <div class="plan featured">
+      <div class="plan-badge">Más popular</div>
+      <div class="plan-tag">Professional</div>
+      <div class="plan-name">Para empresas consolidadas</div>
+      <div class="plan-price">Consultar precio</div>
+      <div class="plan-price-sub">Adaptado a su volumen de llamadas</div>
+      <ul class="plan-features">
+        <li class="plan-feature">2 voces clonadas</li>
+        <li class="plan-feature">ES + CA + EN</li>
+        <li class="plan-feature">Agenda + mensajes + transferencia</li>
+        <li class="plan-feature">Dashboard completo + analytics</li>
+        <li class="plan-feature">Integración CRM</li>
+        <li class="plan-feature">Soporte prioritario 24h</li>
+      </ul>
+      <a class="plan-btn" href="mailto:paurobi14@gmail.com?subject=Informacion%20Plan%20Professional%20VocalAI%20Pro">Solicitar información</a>
+    </div>
+    <div class="plan">
+      <div class="plan-tag">Enterprise</div>
+      <div class="plan-name">Para grandes organizaciones</div>
+      <div class="plan-price">Consultar precio</div>
+      <div class="plan-price-sub">Volumen ilimitado · SLA garantizado</div>
+      <ul class="plan-features">
+        <li class="plan-feature">Voces ilimitadas</li>
+        <li class="plan-feature">Todos los idiomas</li>
+        <li class="plan-feature">Integración con sistemas propios</li>
+        <li class="plan-feature">Servidor dedicado</li>
+        <li class="plan-feature">Account manager exclusivo</li>
+        <li class="plan-feature">SLA 99.9% uptime</li>
+      </ul>
+      <a class="plan-btn" href="mailto:paurobi14@gmail.com?subject=Informacion%20Plan%20Enterprise%20VocalAI%20Pro">Solicitar información</a>
+    </div>
+  </div>
+</section>
+
+<section class="garantia-bg">
+  <div class="tag">Compromiso</div>
+  <h2 class="title">Sin riesgo.<br><em>Garantía total.</em></h2>
+  <p class="body-text">Si en los primeros 30 días no está satisfecho, le devolvemos el 100% de la inversión. Sin preguntas.</p>
+  <div class="garantia-items">
+    <div class="g-item"><div class="g-icon">30</div><div class="g-title">Días de garantía</div><div class="g-text">Devolución completa si no está satisfecho</div></div>
+    <div class="g-item"><div class="g-icon">48h</div><div class="g-title">Activación garantizada</div><div class="g-text">Operativo en menos de 48h desde el onboarding</div></div>
+    <div class="g-item"><div class="g-icon">99.9</div><div class="g-title">% Disponibilidad</div><div class="g-text">Infraestructura cloud con monitorización continua</div></div>
+    <div class="g-item"><div class="g-icon">0</div><div class="g-title">Cambios en su sistema</div><div class="g-text">Su número actual. Solo activamos un desvío.</div></div>
+  </div>
+</section>
+
+<section class="cta-bg">
+  <div class="tag" style="color:var(--gold)">Siguiente paso</div>
+  <h2 class="title">Solicite su demo<br><em>esta semana</em></h2>
+  <p class="body-text">En 30 minutos le mostramos el sistema en vivo con un número real. Sin compromisos.</p>
+  <div class="cta-btns">
+    <a class="btn-gold" href="mailto:paurobi14@gmail.com?subject=Solicitud%20de%20informacion%20VocalAI%20Pro&body=Hola%2C%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20VocalAI%20Pro.%20%C2%BFPodr%C3%ADamos%20agendar%20una%20demo%3F">Solicitar información</a>
+    <a class="btn-out" href="tel:+34662121021">662 121 021</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">Vocal<span>AI</span> Pro</div>
+  <div class="footer-info"><span>paurobi14@gmail.com</span><span>662 121 021</span></div>
+</footer>
+
+</body>
+</html>
